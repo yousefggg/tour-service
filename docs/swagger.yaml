@@ -1,0 +1,299 @@
+basePath: /api/v1
+definitions:
+  dto.BookingResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      medical_info:
+        type: string
+      notes:
+        type: string
+      payment_method:
+        type: string
+      people_count:
+        type: integer
+      phone_number:
+        type: string
+      price:
+        type: integer
+      status:
+        type: string
+      tour_id:
+        type: string
+      tour_title:
+        type: string
+    type: object
+  dto.CreateBookingRequest:
+    properties:
+      medical_info:
+        type: string
+      notes:
+        type: string
+      payment_method:
+        type: string
+      people_count:
+        type: integer
+      phone_number:
+        type: string
+      tour_id:
+        type: string
+    type: object
+  dto.CreateTourRequest:
+    properties:
+      country:
+        type: string
+      description:
+        type: string
+      image_url:
+        type: string
+      includes:
+        type: string
+      location:
+        type: string
+      price:
+        type: integer
+      season:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.TourCardResponse:
+    properties:
+      country:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      location:
+        type: string
+      price:
+        type: integer
+      season:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.TourDetailResponse:
+    properties:
+      country:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      includes:
+        type: string
+      location:
+        type: string
+      price:
+        type: integer
+      season:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.UpdateTourRequest:
+    properties:
+      country:
+        type: string
+      description:
+        type: string
+      image_url:
+        type: string
+      includes:
+        type: string
+      location:
+        type: string
+      price:
+        type: integer
+      season:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: Microservice for tours and bookings
+  title: Tour Service API
+  version: "1.0"
+paths:
+  /admin/tours:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tour data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTourRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+      summary: Create tour (admin only)
+      tags:
+      - admin-tours
+  /admin/tours/{id}:
+    delete:
+      parameters:
+      - description: Tour ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      summary: Delete tour (admin only)
+      tags:
+      - admin-tours
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tour ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTourRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+      summary: Update tour (admin only)
+      tags:
+      - admin-tours
+  /bookings:
+    get:
+      description: Get all bookings for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.BookingResponse'
+            type: array
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get user bookings
+      tags:
+      - bookings
+    post:
+      consumes:
+      - application/json
+      description: Create new tour booking with user details
+      parameters:
+      - description: Booking request
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Create booking
+      tags:
+      - bookings
+  /bookings/{id}:
+    get:
+      description: Get single booking by UUID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BookingResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      security:
+      - BearerAuth: []
+      summary: Get booking by ID
+      tags:
+      - bookings
+  /tours:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.TourCardResponse'
+            type: array
+      summary: Get all tours
+      tags:
+      - tours
+  /tours/{id}:
+    get:
+      parameters:
+      - description: Tour ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TourDetailResponse'
+        "404":
+          description: Not Found
+      summary: Get tour by ID
+      tags:
+      - tours
+swagger: "2.0"
