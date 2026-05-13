@@ -33,9 +33,7 @@ type Config struct {
  // @BasePath /api/v1
 func main() {
 
-	// =========================
-	// CONFIG
-	// =========================
+
 	cfg := Config{
 		DBUrl:     "postgres://yousef:20062006@127.0.0.1:5432/tour_db?sslmode=disable",
 		JWTSecret: "secret-key",
@@ -43,9 +41,6 @@ func main() {
 		Port:      ":8081",
 	}
 
-	// =========================
-	// LOGGER INIT
-	// =========================
 	logger.Init("debug")
 
 	logger.Info(
@@ -53,14 +48,8 @@ func main() {
 		"port", cfg.Port,
 	)
 
-	// =========================
-	// MIGRATIONS
-	// =========================
 	runMigrations(cfg.DBUrl)
 
-	// =========================
-	// DATABASE CONNECTION
-	// =========================
 	ctx := context.Background()
 
 	dbpool, err := pgxpool.New(ctx, cfg.DBUrl)
@@ -76,9 +65,7 @@ func main() {
 
 	logger.Info("postgres connected successfully")
 
-	// =========================
-	// JWT MANAGER
-	// =========================
+
 	jwtManager, err := jwtlib.NewTokenManager(
 		cfg.JWTSecret,
 		cfg.JWTTTL,
@@ -93,17 +80,12 @@ func main() {
 
 	logger.Info("jwt manager initialized")
 
-	// =========================
-	// REPOSITORIES
-	// =========================
+	
 	tourRepo := postgres.NewTourRepository(dbpool)
 	bookingRepo := postgres.NewBookingRepository(dbpool)
 
 	logger.Info("repositories initialized")
 
-	// =========================
-	// USECASES
-	// =========================
 	tourUC := usecase.NewTourUsecase(tourRepo)
 	bookingUC := usecase.NewBookingUsecase(
 		bookingRepo,
@@ -112,17 +94,12 @@ func main() {
 
 	logger.Info("usecases initialized")
 
-	// =========================
-	// HANDLERS
-	// =========================
 	tourHandler := handler.NewTourHandler(tourUC)
 	bookingHandler := handler.NewBookingHandler(bookingUC)
 
 	logger.Info("handlers initialized")
 
-	// =========================
-	// ROUTER
-	// =========================
+	
 	router := httpDelivery.NewRouter(
 		tourHandler,
 		bookingHandler,
@@ -131,9 +108,6 @@ func main() {
 
 	logger.Info("http router initialized")
 
-	// =========================
-	// HTTP SERVER
-	// =========================
 	server := &http.Server{
 		Addr: cfg.Port,
 		Handler: router.Setup(),
