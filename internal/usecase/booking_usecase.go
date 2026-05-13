@@ -7,27 +7,19 @@ import (
 	"github.com/yousefggg/tour-service/internal/domain"
 )
 
-// =========================
-// REPOSITORY CONTRACT
-// =========================
-
 type BookingRepository interface {
 	CreateBooking(ctx context.Context, b *domain.Booking) error
 	GetUserBookings(ctx context.Context, userID uuid.UUID) ([]domain.Booking, error)
 	GetBookingByID(ctx context.Context, id uuid.UUID) (*domain.Booking, error)
 }
-// =========================
-// USECASE
-// =========================
+
 
 type BookingUsecase struct {
 	bookingRepo BookingRepository
 	tourRepo    TourRepository
 }
 
-// =========================
-// CONSTRUCTOR
-// =========================
+
 
 func NewBookingUsecase(
 	br BookingRepository,
@@ -39,10 +31,6 @@ func NewBookingUsecase(
 	}
 }
 
-// =========================
-// INPUT MODEL (usecase layer DTO)
-// =========================
-
 type CreateBookingInput struct {
 	TourID        uuid.UUID
 	PhoneNumber   string
@@ -52,9 +40,6 @@ type CreateBookingInput struct {
 	PaymentMethod string
 }
 
-// =========================
-// CREATE BOOKING
-// =========================
 
 func (u *BookingUsecase) CreateBooking(
 	ctx context.Context,
@@ -62,7 +47,6 @@ func (u *BookingUsecase) CreateBooking(
 	input CreateBookingInput,
 ) error {
 
-	// 1. check tour exists
 	tour, err := u.tourRepo.GetTourByID(ctx, input.TourID)
 	if err != nil {
 		return err
@@ -71,12 +55,10 @@ func (u *BookingUsecase) CreateBooking(
 		return domain.ErrNotFound
 	}
 
-	// 2. validation (light business rules)
 	if input.PeopleCount <= 0 {
 		return domain.ErrInvalidInput
 	}
 
-	// 3. build domain entity
 	booking := &domain.Booking{
 		ID:     uuid.New(),
 		UserID: userID,
@@ -91,13 +73,10 @@ func (u *BookingUsecase) CreateBooking(
 		Status: domain.BookingPending,
 	}
 
-	// 4. persist
 	return u.bookingRepo.CreateBooking(ctx, booking)
 }
 
-// =========================
-// GET USER BOOKINGS
-// =========================
+
 
 func (u *BookingUsecase) GetUserBookings(
 	ctx context.Context,
@@ -107,9 +86,6 @@ func (u *BookingUsecase) GetUserBookings(
 	return u.bookingRepo.GetUserBookings(ctx, userID)
 }
 
-// =========================
-// GET BOOKING BY ID
-// =========================
 
 func (u *BookingUsecase) GetBookingByID(
 	ctx context.Context,

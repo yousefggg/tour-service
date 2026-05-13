@@ -7,9 +7,6 @@ import (
 	"github.com/yousefggg/tour-service/internal/domain"
 )
 
-// =========================
-// TOUR REPOSITORY MOCK
-// =========================
 
 type TourRepoMock struct {
 	GetTourByIDFunc func(ctx context.Context, id uuid.UUID) (*domain.Tour, error)

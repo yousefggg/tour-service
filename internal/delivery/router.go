@@ -34,32 +34,21 @@ func NewRouter(
 func (r *Router) Setup() http.Handler {
 	router := chi.NewRouter()
 
-	// ======================
-	// SWAGGER
-	// ======================
 	router.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	router.Route("/api/v1", func(api chi.Router) {
 
-		// ======================
-		// PUBLIC ROUTES
-		// ======================
 		api.Get("/tours", r.tourHandler.GetAllTours)
 		api.Get("/tours/{id}", r.tourHandler.GetTourByID)
 
-		// ======================
-		// PROTECTED ROUTES
-		// ======================
 		api.Group(func(protected chi.Router) {
 
 			protected.Use(tourMiddleware.JWTMiddleware(r.jwtManager))
 
-			// BOOKINGS (USER)
 			protected.Post("/bookings", r.bookingHandler.CreateBooking)
 			protected.Get("/bookings", r.bookingHandler.GetUserBookings)
 			protected.Get("/bookings/{id}", r.bookingHandler.GetBookingByID)
 
-			// ADMIN
 			protected.Route("/admin", func(admin chi.Router) {
 
 				admin.Post("/tours", r.tourHandler.CreateTour)

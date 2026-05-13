@@ -66,7 +66,6 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// --- Get User Bookings ---
 func (h *BookingHandler) GetUserBookings(w http.ResponseWriter, r *http.Request) {
 	userID, err := h.getUserID(r)
 	if err != nil {

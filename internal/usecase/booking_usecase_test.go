@@ -10,7 +10,6 @@ import (
 )
 func TestBookingUsecase_CreateBooking_Success(t *testing.T) {
 
-	// arrange
 	tourID := uuid.New()
 	userID := uuid.New()
 
@@ -47,10 +46,8 @@ func TestBookingUsecase_CreateBooking_Success(t *testing.T) {
 		PaymentMethod: "card",
 	}
 
-	// act
 	err := uc.CreateBooking(context.Background(), userID, input)
 
-	// assert
 	if err != nil {
 		t.Fatalf("expected nil error, got %v", err)
 	}
